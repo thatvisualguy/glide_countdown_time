@@ -1,0 +1,9 @@
+{
+  "name": "Timer hh:mm:ss:nn",
+  "description": "Returns duration between start and end as hh:mm:ss:nn (nn = centiseconds). If end omitted, uses current time.",
+  "parameters": [
+    { "name": "start", "type": "date-time" },
+    { "name": "end",   "type": "date-time" }
+  ],
+  "result": { "type": "string" }
+}
