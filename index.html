@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Glide Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    #timer {
+      font-size: 3em;
+      font-weight: bold;
+      padding: 20px 40px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    #overdue {
+      margin-top: 15px;
+      font-size: 1.2em;
+      font-weight: 500;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">00:00:00</div>
+  <div id="overdue"></div>
+
+  <script>
+    // --- Helpers ---
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    function formatTime(ms) {
+      const negative = ms < 0;
+      ms = Math.abs(ms);
+
+      const hours = Math.floor(ms / 3600000);
+      const minutes = Math.floor((ms % 3600000) / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+
+      const hh = String(hours).padStart(2, "0");
+      const mm = String(minutes).padStart(2, "0");
+      const ss = String(seconds).padStart(2, "0");
+
+      return (negative ? "-" : "") + `${hh}:${mm}:${ss}`;
+    }
+
+    // --- Get URL params ---
+    const startParam = getQueryParam("start");
+    const hoursParam = parseFloat(getQueryParam("hours")) || 0;
+    const idParam = getQueryParam("id");
+
+    if (!startParam || !idParam) {
+      document.getElementById("timer").textContent = "Invalid Parameters";
+      throw new Error("Missing required parameters: start, id");
+    }
+
+    const startTime = new Date(startParam);
+    let endTime = new Date(startTime.getTime() + hoursParam * 3600 * 1000);
+
+    // --- Persist timer state by ID ---
+    const savedEnd = localStorage.getItem("timer_" + idParam);
+    if (savedEnd) {
+      endTime = new Date(parseInt(savedEnd, 10));
+    } else {
+      localStorage.setItem("timer_" + idParam, endTime.getTime().toString());
+    }
+
+    const timerEl = document.getElementById("timer");
+    const overdueEl = document.getElementById("overdue");
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = endTime - now;
+
+      timerEl.textContent = formatTime(diff);
+
+      if (diff >= 0) {
+        timerEl.style.color = "green";
+        overdueEl.textContent = "";
+      } else {
+        timerEl.style.color = "red";
+        const daysLate = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24));
+        overdueEl.textContent = daysLate > 0 
+          ? `${daysLate} day${daysLate > 1 ? "s" : ""} late` 
+          : "Just expired";
+      }
+    }
+
+    setInterval(updateTimer, 1000); // update every 1 second
+    updateTimer();
+  </script>
+</body>
+</html>
