@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Glide Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,20 +14,35 @@
       height: 100vh;
       margin: 0;
       background: #f9f9f9;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
     }
+
     #timer {
-      font-size: 3em;
+      font-size: clamp(2rem, 8vw, 4rem); /* scales with screen width */
       font-weight: bold;
-      padding: 20px 40px;
+      padding: 10px 20px;
       border-radius: 12px;
       background: #fff;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      word-break: break-word;
+      max-width: 100%;
     }
+
     #overdue {
-      margin-top: 15px;
-      font-size: 1.2em;
+      margin-top: 12px;
+      font-size: clamp(1rem, 4vw, 1.5rem);
       font-weight: 500;
       color: #444;
+      word-break: break-word;
+    }
+
+    /* Small screen adjustments */
+    @media (max-width: 480px) {
+      #timer {
+        padding: 8px 15px;
+      }
     }
   </style>
 </head>
